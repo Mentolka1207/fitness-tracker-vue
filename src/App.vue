@@ -64,10 +64,9 @@ function selectDay(dayId) {
 }
 
 function updateSets(id, value) {
-  const target = workouts.value.find((w) => w.id === id)?.targetSets ?? 0;
-  const safe = Math.max(0, Math.min(value, target));
-  // новий об'єкт замість мутації старого
-  doneSets.value = { ...doneSets.value, [id]: safe };
+  // межі 0…targetSets уже перевіряє SetCounter;
+  // тут лише створюємо новий об'єкт замість мутації старого
+  doneSets.value = { ...doneSets.value, [id]: value };
 }
 
 function resetWeek() {
@@ -94,7 +93,9 @@ onMounted(async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const type = res.headers.get('content-type') ?? '';
     if (!type.includes('json')) {
-      throw new Error(`за адресою ${DATA_URL} сервер повернув не JSON (${type || 'тип невідомий'})`);
+      throw new Error(
+        `за адресою ${DATA_URL} сервер повернув не JSON (${type || 'тип невідомий'})`
+      );
     }
     workouts.value = await res.json();
   } catch (e) {
