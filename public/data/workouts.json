@@ -1,0 +1,14 @@
+[
+  {"id": 101, "day": "mon", "title": "Присідання зі штангою", "muscle": "Ноги", "targetSets": 4, "reps": 8, "weightKg": 60},
+  {"id": 102, "day": "mon", "title": "Румунська тяга", "muscle": "Задня поверхня стегна", "targetSets": 3, "reps": 10, "weightKg": 50},
+  {"id": 103, "day": "mon", "title": "Планка", "muscle": "Кор", "targetSets": 3, "reps": 45, "weightKg": 0, "unit": "с"},
+  {"id": 201, "day": "tue", "title": "Жим лежачи", "muscle": "Груди", "targetSets": 4, "reps": 8, "weightKg": 55},
+  {"id": 202, "day": "tue", "title": "Тяга штанги в нахилі", "muscle": "Спина", "targetSets": 4, "reps": 10, "weightKg": 45},
+  {"id": 301, "day": "wed", "title": "Біг на доріжці", "muscle": "Кардіо", "targetSets": 1, "reps": 20, "weightKg": 0, "unit": "хв"},
+  {"id": 401, "day": "thu", "title": "Жим гантелей сидячи", "muscle": "Плечі", "targetSets": 3, "reps": 12, "weightKg": 14},
+  {"id": 402, "day": "thu", "title": "Підтягування", "muscle": "Спина", "targetSets": 4, "reps": 6, "weightKg": 0},
+  {"id": 403, "day": "thu", "title": "Згинання рук з гантелями", "muscle": "Біцепс", "targetSets": 3, "reps": 12, "weightKg": 10},
+  {"id": 501, "day": "fri", "title": "Випади з гантелями", "muscle": "Ноги", "targetSets": 3, "reps": 10, "weightKg": 12},
+  {"id": 502, "day": "fri", "title": "Віджимання на брусах", "muscle": "Трицепс", "targetSets": 3, "reps": 10, "weightKg": 0},
+  {"id": 601, "day": "sat", "title": "Велотренажер", "muscle": "Кардіо", "targetSets": 1, "reps": 30, "weightKg": 0, "unit": "хв"}
+]
