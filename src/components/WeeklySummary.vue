@@ -1,18 +1,13 @@
 <script setup>
-// Підсумок тижня. Отримує готові числа з App і показує їх;
-// кнопка «Скинути» лише повідомляє батька подією reset.
+// Підсумок тижня. Усі числа – геттери сховища workouts;
+// кнопка «Скинути тиждень» викликає дію очищення.
+import { storeToRefs } from 'pinia';
+import { useWorkoutsStore } from '../stores/workouts.js';
+import { DAYS_FORMS, plural } from '../utils/plural.js';
 import ProgressBar from './ProgressBar.vue';
-import GoalBadge from './GoalBadge.vue';
 
-const props = defineProps({
-  setsDone: { type: Number, required: true },
-  setsTarget: { type: Number, required: true },
-  workoutsDone: { type: Number, required: true },
-  workoutsTotal: { type: Number, required: true },
-  goalDone: { type: Boolean, default: false },
-});
-
-const emit = defineEmits(['reset']);
+const workouts = useWorkoutsStore();
+const { list, setsDone, setsPlanned, exercisesDone, streak } = storeToRefs(workouts);
 </script>
 
 <template>
@@ -20,28 +15,23 @@ const emit = defineEmits(['reset']);
     <dl class="summary__stats">
       <div>
         <dt>Підходів виконано</dt>
-        <dd>{{ props.setsDone }} з {{ props.setsTarget }}</dd>
+        <dd>{{ setsDone }} з {{ setsPlanned }}</dd>
       </div>
       <div>
         <dt>Вправ завершено</dt>
-        <dd>{{ props.workoutsDone }} з {{ props.workoutsTotal }}</dd>
+        <dd>{{ exercisesDone }} з {{ list.length }}</dd>
+      </div>
+      <div>
+        <dt>Серія днів поспіль</dt>
+        <dd>{{ streak }} {{ plural(streak, DAYS_FORMS) }}</dd>
       </div>
     </dl>
-    <ProgressBar
-      :value="props.setsDone"
-      :max="props.setsTarget"
-      label="Прогрес тижня за підходами"
-    />
-    <GoalBadge
-      :done="props.goalDone"
-      done-text="Ціль тижня виконано"
-      pending-text="Ціль тижня ще не виконано"
-    />
+    <ProgressBar :value="setsDone" :max="setsPlanned" label="Виконання плану тижня" />
     <button
       type="button"
       class="btn btn--ghost"
-      :disabled="props.setsDone === 0"
-      @click="emit('reset')"
+      :disabled="setsDone === 0"
+      @click="workouts.clearWeek()"
     >
       Скинути тиждень
     </button>

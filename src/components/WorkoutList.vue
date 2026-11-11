@@ -1,23 +1,30 @@
 <script setup>
-// Список вправ вибраного дня. Ключ елемента — id з даних, а не індекс масиву.
+// Список вправ вибраного дня. Від батька приходить лише ідентифікатор дня,
+// самі вправи список бере зі сховища (геттер byDay).
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useWorkoutsStore } from '../stores/workouts.js';
+import StatusMessage from './StatusMessage.vue';
 import WorkoutCard from './WorkoutCard.vue';
 
 const props = defineProps({
-  workouts: { type: Array, required: true },
-  doneSets: { type: Object, default: () => ({}) },
+  day: { type: String, required: true },
 });
 
-const emit = defineEmits(['change']);
+const { byDay } = storeToRefs(useWorkoutsStore());
+const items = computed(() => byDay.value[props.day] ?? []);
 </script>
 
 <template>
-  <ul class="workout-list">
-    <li v-for="w in props.workouts" :key="w.id">
-      <WorkoutCard
-        :workout="w"
-        :done="props.doneSets[w.id] ?? 0"
-        @change="(id, value) => emit('change', id, value)"
-      />
+  <ul v-if="items.length > 0" class="workout-list">
+    <!-- ключ елемента – id з даних, а не індекс масиву -->
+    <li v-for="w in items" :key="w.id">
+      <WorkoutCard :workout="w" />
     </li>
   </ul>
+  <StatusMessage
+    v-else
+    kind="empty"
+    text="На цей день тренувань не заплановано – день відпочинку."
+  />
 </template>

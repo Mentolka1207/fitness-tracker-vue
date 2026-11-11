@@ -1,7 +1,7 @@
 <script setup>
 // Презентаційний компонент: показує кількість виконаних підходів.
-// Значення приходить ззовні (props.value), зміну компонент лише пропонує
-// подією change — сам лічильник живе в App.
+// Значення приходить ззовні (props.value); про натискання кнопок компонент
+// повідомляє подіями increment і decrement – зі сховищем працює картка.
 const props = defineProps({
   value: { type: Number, required: true },
   min: { type: Number, default: 0 },
@@ -9,13 +9,7 @@ const props = defineProps({
   label: { type: String, required: true },
 });
 
-const emit = defineEmits(['change']);
-
-function step(delta) {
-  const next = props.value + delta;
-  if (next < props.min || next > props.max) return;
-  emit('change', next);
-}
+const emit = defineEmits(['increment', 'decrement']);
 </script>
 
 <template>
@@ -25,7 +19,7 @@ function step(delta) {
       class="btn btn--round"
       :disabled="props.value <= props.min"
       :aria-label="`Мінус підхід: ${props.label}`"
-      @click="step(-1)"
+      @click="emit('decrement')"
     >
       −
     </button>
@@ -37,7 +31,7 @@ function step(delta) {
       class="btn btn--round"
       :disabled="props.value >= props.max"
       :aria-label="`Плюс підхід: ${props.label}`"
-      @click="step(1)"
+      @click="emit('increment')"
     >
       +
     </button>

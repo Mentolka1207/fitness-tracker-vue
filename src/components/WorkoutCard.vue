@@ -1,19 +1,23 @@
 <script setup>
-// Картка однієї вправи. Власного стану немає: кількість підходів (done)
-// приходить з App, а зміну картка передає нагору подією change(id, value).
+// Картка однієї вправи. Опис вправи приходить від списку через props,
+// а кількість виконаних підходів картка читає зі сховища і змінює його діями.
 import { computed } from 'vue';
-import SetCounter from './SetCounter.vue';
+import { useWorkoutsStore } from '../stores/workouts.js';
 import GoalBadge from './GoalBadge.vue';
+import SetCounter from './SetCounter.vue';
 
 const props = defineProps({
   workout: { type: Object, required: true },
-  done: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(['change']);
+const workouts = useWorkoutsStore();
 
-// Похідні значення — не зберігаються в стані, а обчислюються з props.
-const goalDone = computed(() => props.done >= props.workout.targetSets);
+// Похідні значення – обчислюються зі стану сховища та props.
+const hasEntry = computed(() => props.workout.id in workouts.doneSets);
+const done = computed(() =>
+  Math.min(workouts.doneSets[props.workout.id] ?? 0, props.workout.targetSets)
+);
+const goalDone = computed(() => done.value >= props.workout.targetSets);
 const plan = computed(() => {
   const { targetSets, reps, weightKg, unit } = props.workout;
   const amount = `${targetSets} × ${reps} ${unit ?? 'повт.'}`;
@@ -28,11 +32,23 @@ const plan = computed(() => {
       <p class="card__meta">{{ props.workout.muscle }} · {{ plan }}</p>
       <GoalBadge :done="goalDone" />
     </div>
-    <SetCounter
-      :value="props.done"
-      :max="props.workout.targetSets"
-      :label="props.workout.title"
-      @change="(value) => emit('change', props.workout.id, value)"
-    />
+    <div class="card__actions">
+      <SetCounter
+        :value="done"
+        :max="props.workout.targetSets"
+        :label="props.workout.title"
+        @increment="workouts.addSet(props.workout.id)"
+        @decrement="workouts.setSets(props.workout.id, done - 1)"
+      />
+      <button
+        type="button"
+        class="btn btn--ghost btn--small"
+        :disabled="!hasEntry"
+        :aria-label="`Скинути підходи: ${props.workout.title}`"
+        @click="workouts.removeEntry(props.workout.id)"
+      >
+        Скинути
+      </button>
+    </div>
   </article>
 </template>

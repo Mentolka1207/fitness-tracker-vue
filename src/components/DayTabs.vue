@@ -1,11 +1,14 @@
 <script setup>
 // Вкладки днів тижня за шаблоном Tabs з ARIA Authoring Practices:
-// активна вкладка в порядку Tab, між вкладками — стрілки, Home, End.
-// Вибраний день живе в App; компонент лише повідомляє про вибір подією select.
-import { nextTick, useTemplateRef } from 'vue';
+// активна вкладка в порядку Tab, між вкладками – стрілки, Home, End.
+// Вибраний день – локальний стан App (props + подія select),
+// а зведення «виконано / усього» вкладки читають зі сховища самі.
+import { computed, nextTick, useTemplateRef } from 'vue';
+import { storeToRefs } from 'pinia';
+import { DAYS } from '../data/days.js';
+import { useWorkoutsStore } from '../stores/workouts.js';
 
 const props = defineProps({
-  days: { type: Array, required: true },
   selected: { type: String, required: true },
   panelId: { type: String, default: 'day-panel' },
 });
@@ -13,8 +16,11 @@ const props = defineProps({
 const emit = defineEmits(['select']);
 const listEl = useTemplateRef('list'); // посилання на DOM-вузол, не стан
 
+const { dayStats } = storeToRefs(useWorkoutsStore());
+const tabs = computed(() => DAYS.map((day) => ({ ...day, ...dayStats.value[day.id] })));
+
 async function onKeydown(event) {
-  const ids = props.days.map((d) => d.id);
+  const ids = DAYS.map((d) => d.id);
   const i = ids.indexOf(props.selected);
   const moves = {
     ArrowRight: (i + 1) % ids.length,
@@ -34,7 +40,7 @@ async function onKeydown(event) {
 <template>
   <div ref="list" class="tabs" role="tablist" aria-label="Дні тижня" @keydown="onKeydown">
     <button
-      v-for="day in props.days"
+      v-for="day in tabs"
       :id="`tab-${day.id}`"
       :key="day.id"
       type="button"
