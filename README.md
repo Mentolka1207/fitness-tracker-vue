@@ -75,3 +75,16 @@ src/components/
   ProgressBar.vue             смуга прогресу (role="progressbar")                (лише props)
   StatusMessage.vue           завантаження / помилка / порожньо                  (лише props)
 ```
+
+## Автоматичні сценарії перевірки
+
+Сценарії з таблиці 6.1 звіту записано у `tests/scenarios.mjs` (бібліотека Playwright).
+Перед першим запуском потрібно завантажити браузер:
+
+```bash
+npx playwright install chromium
+npm run dev                                   # в одному терміналі
+npm run test:e2e -- http://localhost:5173     # в іншому
+# або для зібраної версії: npm run build && npm run preview, потім
+npm run test:e2e -- http://localhost:4173
+```

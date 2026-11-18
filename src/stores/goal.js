@@ -1,6 +1,6 @@
 // Store «goal»: тижнева ціль, яку задає користувач (кількість підходів на тиждень).
 // Записано у вигляді setup-store: ref – стан, computed – геттери, функції – дії.
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { useWorkoutsStore } from './workouts.js';
 
@@ -40,5 +40,13 @@ export const useGoalStore = defineStore('goal', () => {
     return true;
   }
 
-  return { weeklyTarget, maxTarget, progressPercent, remaining, reached, setTarget };
+  // Узгодити ціль із планом. Під час відновлення з localStorage план ще не
+  // завантажено, тому ціль перевіряється лише за GOAL_MAX. Коли план з'являється,
+  // maxTarget зменшується, і завелика ціль обмежується ним.
+  function fitToPlan() {
+    if (weeklyTarget.value > maxTarget.value) weeklyTarget.value = maxTarget.value;
+  }
+  watch(maxTarget, fitToPlan);
+
+  return { weeklyTarget, maxTarget, progressPercent, remaining, reached, setTarget, fitToPlan };
 });
